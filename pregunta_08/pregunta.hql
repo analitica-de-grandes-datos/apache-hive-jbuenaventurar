@@ -3,9 +3,9 @@
 Pregunta
 ===========================================================================
 
-Escriba una consulta que para cada valor único de la columna `t0.c2,` 
+Escriba una consulta que para cada valor único de la columna t0.c2, 
 calcule la suma de todos los valores asociados a las claves en la columna 
-`t0.c6`.
+t0.c6.
 
 Apache Hive se ejecutará en modo local (sin HDFS).
 
@@ -47,3 +47,12 @@ LOAD DATA LOCAL INPATH 'data1.csv' INTO TABLE tbl1;
     >>> Escriba su respuesta a partir de este punto <<<
 */
 
+DROP TABLE IF EXISTS result;
+CREATE TABLE result AS 
+SELECT c2, sum(value) FROM tbl0
+LATERAL VIEW EXPLODE(c6) tbl AS key,value
+GROUP BY c2;
+
+INSERT OVERWRITE LOCAL DIRECTORY './output'
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
+SELECT * FROM result;

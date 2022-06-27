@@ -5,7 +5,7 @@ Pregunta
 
 Escriba una consulta que calcule la cantidad de registros por clave de la 
 columna 3. En otras palabras, cuántos registros hay que tengan la clave 
-`aaa`?
+aaa?
 
 Apache Hive se ejecutará en modo local (sin HDFS).
 
@@ -29,4 +29,13 @@ LOAD DATA LOCAL INPATH 'data.tsv' INTO TABLE t0;
 /*
     >>> Escriba su respuesta a partir de este punto <<<
 */
+DROP TABLE IF EXISTS result;
+CREATE TABLE result AS 
+SELECT key,COUNT(key) FROM t0
+LATERAL VIEW EXPLODE(c3) tbl AS key,value
+GROUP BY key;
+
+INSERT OVERWRITE LOCAL DIRECTORY './output'
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
+SELECT * FROM result;
 
